@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from models import EnvironmentFeatures, SensorData
 from database import get_sensor_data_by_id, store_sensor_data
+from prediction import predict_environment as predict_with_model
 
 app = FastAPI()
 
@@ -28,5 +29,9 @@ def get_sensor_data(row_id: int):
 
 @app.post("/environment")
 def predict_environment(environment_features: EnvironmentFeatures):
-    # Here we will let the model predict the environment based on the submitted features.
-    return {"prediction": "Day", "certainty": 0.95}
+    features: dict[str, float | str] = {
+        "lux": environment_features.lux,
+        "sun_elevation": environment_features.sun_elevation,
+        "sun_azimut": environment_features.sun_azimut,
+    }
+    return predict_with_model(features)
