@@ -1,9 +1,10 @@
 import sqlite3
 from pathlib import Path
-
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
 import joblib
 import pandas as pd
-from sklearn.cluster import KMeans
 
 
 def train_model(
@@ -31,29 +32,61 @@ def train_model(
     if df.empty:
         raise ValueError("No rows found in the database")
 
-    df["value"] = pd.to_numeric(df["value"], errors="coerce")
-    df = df.dropna(subset=["value"])
+    df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True).dt.round("1min")
 
     if df.empty:
         raise ValueError("No numeric values available for training")
 
-    pivot = df.pivot_table(index="timestamp", columns="entity_id", values="value").fillna(0)
+    entity_ids = df["entity_id"].unique().tolist()
+    training_frame = pd.DataFrame(columns=entity_ids, index=pd.date_range(start=df["timestamp"].min(), end=df["timestamp"].max(), freq="1min"))
 
-    if len(pivot) < n_clusters:
+    for entity_id in entity_ids:
+        entity_values = (
+            df.loc[df["entity_id"] == entity_id, ["timestamp", "value"]]
+            .groupby("timestamp", as_index=False)
+            .last()
+            .set_index("timestamp")
+        )
+        training_frame[entity_id] = entity_values["value"].reindex(training_frame.index)
+
+    # Forward-fill missing values so the last known value stays in place until a new value appears.
+    training_frame = training_frame.ffill()
+
+    if len(training_frame) < n_clusters:
         raise ValueError(f"Not enough rows for {n_clusters} clusters")
 
-    feature_columns = list(pivot.columns)
-    training_frame = pd.DataFrame(index=pivot.index)
-    training_frame["lux"] = pivot[feature_columns[0]] if feature_columns else 0
-    training_frame["sun_elevation"] = (
-        pivot[feature_columns[1]] if len(feature_columns) > 1 else 0
-    )
-    training_frame["sun_azimut"] = (
-        pivot[feature_columns[2]] if len(feature_columns) > 2 else 0
-    )
-    training_frame = training_frame.fillna(0)
+    for col in training_frame.columns:
+        if col != "season" and col != "weather.state":
+            training_frame[col] = pd.to_numeric(training_frame[col], errors='coerce')
 
-    model = KMeans(n_clusters=n_clusters, random_state=42)
+    # Encode nominal categorical features for KMeans
+    training_frame = pd.get_dummies(
+        training_frame,
+        columns=["weather.state", "season"],
+        prefix=["weather_state", "season"],
+        dummy_na=False,
+    )
+
+    # Ensure everything is numeric
+    training_frame = training_frame.apply(pd.to_numeric, errors="coerce")
+
+    # Impute missing values and standardize features
+
+    imputer = SimpleImputer(strategy="median")
+    training_frame = pd.DataFrame(
+        imputer.fit_transform(training_frame),
+        index=training_frame.index,
+        columns=training_frame.columns,
+    )
+
+    scaler = StandardScaler()
+    training_frame = pd.DataFrame(
+        scaler.fit_transform(training_frame),
+        index=training_frame.index,
+        columns=training_frame.columns,
+    )
+
+    model = KMeans(n_clusters=n_clusters)
     model.fit(training_frame)
 
     joblib.dump(model, output_path)
