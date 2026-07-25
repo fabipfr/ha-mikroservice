@@ -53,3 +53,26 @@ def store_sensor_data(data: dict[str, Any]) -> int:
         if row_id is None:
             raise RuntimeError("Failed to store sensor data")
         return int(row_id)
+
+
+def get_sensor_data_by_id(row_id: int) -> dict[str, Any] | None:
+    with _get_connection() as conn:
+        row = conn.execute(
+            """
+            SELECT id, entity_id, value, timestamp, created_at
+            FROM sensor_data
+            WHERE id = ?
+            """,
+            (row_id,),
+        ).fetchone()
+
+    if row is None:
+        return None
+
+    return {
+        "id": row["id"],
+        "entity_id": row["entity_id"],
+        "value": row["value"],
+        "timestamp": row["timestamp"],
+        "created_at": row["created_at"],
+    }

@@ -2,7 +2,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from models import EnvironmentFeatures, SensorData
-from database import store_sensor_data
+from database import get_sensor_data_by_id, store_sensor_data
 
 app = FastAPI()
 
@@ -18,6 +18,13 @@ def read_root():
 def write_sensor_data(sensor_data: SensorData):
     row_id = store_sensor_data(sensor_data.model_dump())
     return {"message": "Sensor data received", "data": sensor_data, "stored_id": row_id}
+
+@app.get("/environment/data/{row_id}")
+def get_sensor_data(row_id: int):
+    data = get_sensor_data_by_id(row_id)
+    if data is None:
+        return {"error": "Sensor data not found"}
+    return data
 
 @app.post("/environment")
 def predict_environment(environment_features: EnvironmentFeatures):
