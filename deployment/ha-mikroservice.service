@@ -6,10 +6,11 @@ After=network.target
 Type=simple
 User=www-data
 WorkingDirectory=/opt/ha-mikroservice
-ExecStart=/opt/ha-mikroservice/.venv/bin/fastapi run --host 0.0.0.0 --port 8000
+ExecStart=/opt/ha-mikroservice/.venv/bin/python -m fastapi run --host 0.0.0.0 --port 8000
 Restart=always
 RestartSec=3
 Environment=PYTHONUNBUFFERED=1
+Environment=PATH=/opt/ha-mikroservice/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 [Install]
 WantedBy=multi-user.target
