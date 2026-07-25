@@ -44,7 +44,7 @@ class TrainModelTests(unittest.TestCase):
             self.assertTrue(output_path.exists())
             loaded_model = joblib.load(output_path)
             self.assertEqual(loaded_model.__class__.__name__, model.__class__.__name__)
-            self.assertEqual(list(model.feature_names_in_), ["lux", "sun_elevation", "sun_azimut"])
+            self.assertEqual(list(model.feature_names_in_), ["lux", "sun_elevation", "sun_azimuth"])
 
 
 if __name__ == "__main__":

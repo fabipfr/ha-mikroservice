@@ -29,7 +29,7 @@ def predict_environment(
             {
                 "lux": float(features.get("lux", 0.0)),
                 "sun_elevation": float(features.get("sun_elevation", 0.0)),
-                "sun_azimut": float(features.get("sun_azimut", 0.0)),
+                "sun_azimuth": float(features.get("sun_azimuth", 0.0)),
             }
         ]
     )

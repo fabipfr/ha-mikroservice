@@ -32,6 +32,6 @@ def predict_environment(environment_features: EnvironmentFeatures):
     features: dict[str, float | str] = {
         "lux": environment_features.lux,
         "sun_elevation": environment_features.sun_elevation,
-        "sun_azimut": environment_features.sun_azimut,
+        "sun_azimuth": environment_features.sun_azimuth,
     }
     return predict_with_model(features)

@@ -12,7 +12,7 @@ class PredictionEndpointTests(unittest.TestCase):
         payload = {
             "lux": 300.0,
             "sun_elevation": 45.0,
-            "sun_azimut": 120.0,
+            "sun_azimuth": 120.0,
             "season": "summer",
         }
 
