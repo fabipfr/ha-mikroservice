@@ -1,0 +1,15 @@
+[Unit]
+Description=HA Mikroservice
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/ha-mikroservice
+ExecStart=/opt/ha-mikroservice/.venv/bin/fastapi run --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
