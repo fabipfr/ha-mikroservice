@@ -14,7 +14,7 @@ def read_root():
         return readme_path.read_text(encoding="utf-8")
     return "<h1>No README found</h1>"
 
-@app.post("/environment/sensors")
+@app.post("/environment/data")
 def write_sensor_data(sensor_data: SensorData):
     row_id = store_sensor_data(sensor_data.model_dump())
     return {"message": "Sensor data received", "data": sensor_data, "stored_id": row_id}
