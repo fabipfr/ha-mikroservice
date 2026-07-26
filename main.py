@@ -29,9 +29,10 @@ def get_sensor_data(row_id: int):
 
 @app.post("/environment")
 def predict_environment(environment_features: EnvironmentFeatures):
-    features: dict[str, float | str] = {
-        "lux": environment_features.lux,
-        "sun_elevation": environment_features.sun_elevation,
-        "sun_azimuth": environment_features.sun_azimuth,
-    }
-    return predict_with_model(features)
+    return predict_with_model({
+        "sensor.lux": environment_features.sensor_lux,
+        "sun.elevation": environment_features.sun_elevation,
+        "sun.azimuth": environment_features.sun_azimuth,
+        "season": environment_features.season,
+        "weather.state": environment_features.weather_state
+    })

@@ -6,7 +6,8 @@ class SensorData(BaseModel):
     timestamp: str
 
 class EnvironmentFeatures(BaseModel):
-    lux: float
+    sensor_lux: float
     sun_elevation: float
     sun_azimuth: float
     season: str
+    weather_state: str
