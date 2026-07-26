@@ -8,5 +8,3 @@ class SensorData(BaseModel):
 class EnvironmentFeatures(BaseModel):
     sensor_lux: float
     sun_elevation: float
-    sun_azimuth: float
-    season: str

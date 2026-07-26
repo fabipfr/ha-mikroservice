@@ -3,13 +3,14 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from models import EnvironmentFeatures, SensorData
 from database import get_sensor_data_by_id, store_sensor_data
-from prediction import predict_environment as predict_with_model
+import joblib, math
 
 app = FastAPI(
     version="1.0.1",
     title="Home Assistant Microservice"
 )
 
+model = joblib.load("ml_models/decision_tree.joblib")
 
 @app.get("/", response_class=HTMLResponse)
 def read_root():
@@ -31,10 +32,24 @@ def get_sensor_data(row_id: int):
     return data
 
 @app.post("/environment")
-def predict_environment(environment_features: EnvironmentFeatures):
-    return predict_with_model({
-        "sensor.lux": environment_features.sensor_lux,
-        "sun.elevation": environment_features.sun_elevation,
-        "sun.azimuth": environment_features.sun_azimuth,
-        "season": environment_features.season
-    })
+def predict_environment(data: EnvironmentFeatures):
+    lux_safe = max(data.sensor_lux, 1.0)
+
+    lux_log = math.log10(lux_safe)
+    elevation_scaled = data.sun_elevation / 6.0
+
+    features = [[lux_log, elevation_scaled]]
+
+    prediction = model.predict(features)[0]
+    probabilities = model.predict_proba(features)[0]
+
+    confidence = float(max(probabilities))
+
+    return {
+        "label": prediction,
+        "confidence": round(confidence, 4),
+        "raw_inputs": {
+            "sensor.lux": data.sensor_lux,
+            "sun.elevation": data.sun_elevation
+        }
+    }

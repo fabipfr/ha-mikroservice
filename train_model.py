@@ -6,6 +6,8 @@ from sklearn.cluster import KMeans
 import joblib
 import pandas as pd
 
+print("WARNING: This script is deprecated.")
+
 
 def _prepare_training_frame(df: pd.DataFrame) -> tuple[pd.DataFrame, SimpleImputer, StandardScaler]:
     entity_ids = df["entity_id"].unique().tolist()
