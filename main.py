@@ -36,6 +36,5 @@ def predict_environment(environment_features: EnvironmentFeatures):
         "sensor.lux": environment_features.sensor_lux,
         "sun.elevation": environment_features.sun_elevation,
         "sun.azimuth": environment_features.sun_azimuth,
-        "season": environment_features.season,
-        "weather.state": environment_features.weather_state
+        "season": environment_features.season
     })

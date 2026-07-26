@@ -10,4 +10,3 @@ class EnvironmentFeatures(BaseModel):
     sun_elevation: float
     sun_azimuth: float
     season: str
-    weather_state: str

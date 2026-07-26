@@ -23,7 +23,6 @@ def _build_feature_frame(features: dict[str, float | str]) -> pd.DataFrame:
                 "sun.elevation": float(features.get("sun.elevation", 0.0)),
                 "sun.azimuth": float(features.get("sun.azimuth", 0.0)),
                 "season": features.get("season", ""),
-                "weather.state": features.get("weather.state", ""),
             }
         ]
     )
@@ -42,8 +41,8 @@ def _transform_features_for_prediction(
 
     prepared_frame = pd.get_dummies(
         prepared_frame,
-        columns=["weather.state", "season"],
-        prefix=["weather_state", "season"],
+        columns=["season"],
+        prefix=["season"],
         dummy_na=False,
     )
     prepared_frame = prepared_frame.apply(pd.to_numeric, errors="coerce")

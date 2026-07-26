@@ -26,13 +26,13 @@ def _prepare_training_frame(df: pd.DataFrame) -> tuple[pd.DataFrame, SimpleImput
     training_frame = training_frame.ffill()
 
     for col in training_frame.columns:
-        if col not in {"season", "weather.state"}:
+        if col not in {"season"}:
             training_frame[col] = pd.to_numeric(training_frame[col], errors="coerce")
 
     training_frame = pd.get_dummies(
         training_frame,
-        columns=["weather.state", "season"],
-        prefix=["weather_state", "season"],
+        columns=["season"],
+        prefix=["season"],
         dummy_na=False,
     )
 
