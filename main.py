@@ -6,7 +6,7 @@ from database import get_sensor_data_by_id, store_sensor_data
 import joblib, math
 
 app = FastAPI(
-    version="1.0.1",
+    version="1.1.0",
     title="Home Assistant Microservice"
 )
 
