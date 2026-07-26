@@ -6,7 +6,7 @@ from database import get_sensor_data_by_id, store_sensor_data
 from prediction import predict_environment as predict_with_model
 
 app = FastAPI(
-    version="1.0.0",
+    version="1.0.1",
     title="Home Assistant Microservice"
 )
 
