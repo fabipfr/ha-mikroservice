@@ -5,7 +5,10 @@ from models import EnvironmentFeatures, SensorData
 from database import get_sensor_data_by_id, store_sensor_data
 from prediction import predict_environment as predict_with_model
 
-app = FastAPI()
+app = FastAPI(
+    version="1.0.0",
+    title="Home Assistant Microservice"
+)
 
 
 @app.get("/", response_class=HTMLResponse)
