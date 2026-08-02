@@ -10,7 +10,7 @@ app = FastAPI(
     title="Home Assistant Microservice"
 )
 
-model = joblib.load("ml_models/decision_tree.pkl")
+model = joblib.load("ml_models/decision_tree_model.pkl")
 
 @app.get("/", response_class=HTMLResponse)
 def read_root():
